@@ -1,33 +1,35 @@
 ﻿using Finance_App.Data;
+using Finance_App.Data.Sevice;
 using Finance_App.Models;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace Finance_App.Controllers
 {
     public class ExpensesController : Controller
     {
-        private readonly FinanceAppContext context;
-        public ExpensesController(FinanceAppContext context)
+        private readonly IExpensiveService  _expensiveService;
+        public ExpensesController(IExpensiveService expensiveService)
         {
-            this.context = context;
+            _expensiveService = expensiveService;
         }
-        public IActionResult Index()
+        public async Task <IActionResult> Index()
         {
-            var expenses = context.Expenses.ToList();
+            var expenses = await _expensiveService.GetAll();
             return View(expenses);
         }
         public IActionResult Create()
         {
             return View();
         }
-
+         
         [HttpPost]
-        public IActionResult Create(Expense expense)
+        public async Task<IActionResult> Create(Expense expense)
         {
             if (ModelState.IsValid)
             {
-                context.Expenses.Add(expense);
-                context.SaveChanges();
+               
+                await  _expensiveService.Add(expense);
                 return RedirectToAction("Index");
             }
             return View();
