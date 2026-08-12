@@ -37,5 +37,15 @@ namespace Finance_App.Data.Sevice
         {
             throw new NotImplementedException();
         }
+
+        public IQueryable GetChart()
+        {
+           var data = _context.Expenses
+                .GroupBy(e => e.Category)
+                .Select(g => new {
+                    Category = g.Key, 
+                    Total = g.Sum(e => e.Amount) });
+            return data;
+        }
     }
 }
